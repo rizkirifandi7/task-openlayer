@@ -1,3 +1,17 @@
+/*
+ * Copyright Intern MSIB6 @ PT Len Industri (Persero)
+ *
+ * THIS SOFTWARE SOURCE CODE AND ANY EXECUTABLE DERIVED THEREOF ARE PROPRIETARY
+ * TO PT LEN INDUSTRI (PERSERO), AS APPLICABLE, AND SHALL NOT BE USED IN ANY WAY
+ * OTHER THAN BEFOREHAND AGREED ON BY PT LEN INDUSTRI (PERSERO), NOR BE REPRODUCED
+ * OR DISCLOSED TO THIRD PARTIES WITHOUT PRIOR WRITTEN AUTHORIZATION BY
+ * PT LEN INDUSTRI (PERSERO), AS APPLICABLE.
+ *
+ * Created Date: Friday, March 22nd 2024, 9:11:41 am
+ * Author: Rizki Rifani | rizkirifandi7@gmail.com <https://github.com/rizkirifandi7>
+ *
+ */
+
 import { useEffect, useRef, useState, useCallback } from "react";
 import "ol/ol.css";
 import Map from "ol/Map";
@@ -28,11 +42,18 @@ import {
 } from "./assets/iconButton";
 import Button from "./components/button";
 import { markerStyle, styleLine } from "./assets/style/marker-style";
-import { formatArea, formatLength } from "./utils/formatMap";
+import { formatArea, formatLength } from "./utils/format-map";
 
-const duration = 2000;
+/**
+ * Represents the vector source for features.
+ * @type {object}
+ */
 const source = new VectorSource();
 
+/**
+ * Represents the vector layer for displaying features on the map.
+ * @type {object}
+ */
 const vector = new VectorLayer({
 	source: source,
 	style: markerStyle,
@@ -52,11 +73,18 @@ const HomeLayout = () => {
 	const measureTooltipRef = useRef();
 	const tileRef = useRef();
 
+	/**
+	 * Handles button click event.
+	 * @param {string} type - Type of the button clicked.
+	 */
 	const handleButtonClick = (type) => {
 		addInteractions(type);
 		setActiveButton(type);
 	};
 
+	/**
+	 * Toggles the open status.
+	 */
 	const toggleOpen = () => setIsOpen(!isOpen);
 
 	useEffect(() => {
@@ -108,7 +136,12 @@ const HomeLayout = () => {
 		}
 	}, []);
 
+	/**
+	 * Flashes a feature on the map.
+	 * @param {object} feature - The feature to flash.
+	 */
 	const flash = (feature) => {
+		const duration = 3000;
 		const start = Date.now();
 		const flashGeom = feature.getGeometry().clone();
 		const listenerKey = tileRef.current.on("postrender", animate);
@@ -142,6 +175,11 @@ const HomeLayout = () => {
 		}
 	};
 
+	/**
+	 * Handles tooltip display.
+	 * @param {object} geom - Geometry object.
+	 * @param {Array} tooltipCoord - Coordinate array for tooltip.
+	 */
 	const handleTooltip = (geom, tooltipCoord) => {
 		let output;
 		switch (geom.constructor) {
@@ -160,9 +198,13 @@ const HomeLayout = () => {
 		measureTooltipElementRef.current.style.display = "block";
 		measureTooltipElementRef.current.innerHTML = output;
 		measureTooltipRef.current.setPosition(tooltipCoord);
-		
 	};
 
+	/**
+	 * Adds interaction to the map.
+	 * @param {string} [type="LineString"] - Type of interaction to add.
+	 *
+	 */
 	const addInteractions = useCallback(
 		(type = "LineString") => {
 			mapLayerRef.current.removeInteraction(drawFeature);
@@ -208,13 +250,19 @@ const HomeLayout = () => {
 		[drawFeature]
 	);
 
+	/**
+	 * Removes interaction from the map.
+	 */
 	const removeInteractions = useCallback(() => {
 		mapLayerRef.current.removeInteraction(drawFeature);
 		mapLayerRef.current.removeOverlay(measureTooltipRef.current);
 		setDrawFeature(null);
 	}, [drawFeature]);
 
-	// Function to handle zoom in and zoom out
+	/**
+	 * Handles zooming in/out of the map.
+	 * @param {number} value - Zoom value.
+	 */
 	const handleZoom = (value) => {
 		const view = mapLayerRef.current.getView();
 		const currentZoom = view.getZoom();
