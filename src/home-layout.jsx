@@ -40,7 +40,7 @@ import {
 	IconPolygon,
 	IconZoomIn,
 	IconZoomOut,
-} from "./assets/iconButton";
+} from "./assets/icon-button";
 import Button from "./components/button";
 import { markerStyle, styleLine } from "./constant/marker-style";
 import { formatArea, formatLength } from "./utils/format-map";
