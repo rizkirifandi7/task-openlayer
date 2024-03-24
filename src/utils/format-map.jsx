@@ -14,6 +14,26 @@
 
 
 import { getArea, getLength } from "ol/sphere.js";
+import Circle from 'ol/geom/Circle';
+
+const formatCircle = function (geometry) {
+    let length;
+    if (geometry instanceof Circle) {
+        // Calculate the circumference of the circle
+        const radius = geometry.getRadius();
+        length = 2 * Math.PI * radius;
+    } else {
+        length = getLength(geometry);
+    }
+
+    let output;
+    if (length > 100) {
+        output = Math.round((length / 1000) * 100) / 100 + " km";
+    } else {
+        output = Math.round(length * 100) / 100 + " m";
+    }
+    return output;
+};
 
 const formatLength = function (line) {
 	const length = getLength(line);
@@ -37,4 +57,4 @@ const formatArea = function (polygon) {
 	return output;
 };
 
-export { formatArea, formatLength };
+export { formatArea, formatLength, formatCircle };

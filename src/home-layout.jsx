@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";
+
 import "ol/ol.css";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -28,7 +29,7 @@ import { Overlay } from "ol";
 import { unByKey } from "ol/Observable";
 import { getVectorContext } from "ol/render";
 import { easeOut } from "ol/easing";
-import { LineString, Circle, Polygon } from "ol/geom";
+import { LineString, Polygon } from "ol/geom";
 
 import {
 	IconArrow,
@@ -41,8 +42,9 @@ import {
 	IconZoomOut,
 } from "./assets/iconButton";
 import Button from "./components/button";
-import { markerStyle, styleLine } from "./assets/style/marker-style";
+import { markerStyle, styleLine } from "./constant/marker-style";
 import { formatArea, formatLength } from "./utils/format-map";
+import { get } from "ol/proj.js";
 
 /**
  * Represents the vector source for features.
@@ -105,6 +107,10 @@ const HomeLayout = () => {
 					context.filter = "none";
 				}
 			});
+
+			const extent = get("EPSG:3857").getExtent().slice();
+			extent[0] += extent[0];
+			extent[2] += extent[2];
 
 			const map = new Map({
 				layers: [tile, vector],
@@ -185,9 +191,6 @@ const HomeLayout = () => {
 		switch (geom.constructor) {
 			case LineString:
 				output = formatLength(geom);
-				break;
-			case Circle:
-				output = formatLength(geom) + formatArea(geom);
 				break;
 			case Polygon:
 				output = formatArea(geom) + formatLength(geom);
@@ -270,12 +273,12 @@ const HomeLayout = () => {
 	};
 
 	return (
-		<div className="relative w-full h-full bg-gray-800">
-			<div ref={mapRef} className="w-full h-screen p-3 rounded-md">
-				<div
-					ref={measureTooltipElementRef}
-					className="text-white ol-tooltip ol-tooltip-measure bg-black/80 p-1 text-xs"
-				/>
+		<div className="relative w-screen h-screen bg-gray-800">
+			<div
+				ref={measureTooltipElementRef}
+				className="absolute bg-white w-20 h-8 p-2 text-black text-sm font-semibold rounded-md shadow-md hidden"
+			/>
+			<div ref={mapRef} className="w-full h-full p-3 rounded-md">
 				<div className="absolute top-0 right-0 h-screen z-10">
 					<div className="flex flex-col justify-center items-end w-full h-full pr-5 gap-2">
 						<Button className={"bg-btn-bg"} onClick={() => removeInteractions()}>
@@ -293,7 +296,6 @@ const HomeLayout = () => {
 							<Button
 								onClick={() => {
 									toggleOpen();
-									removeInteractions();
 								}}
 								className={!isOpen ? "bg-btn-bg" : "bg-slate-200"}
 							>
