@@ -1,60 +1,49 @@
 /*
  * Copyright Intern MSIB6 @ PT Len Industri (Persero)
- * 
+ *
  * THIS SOFTWARE SOURCE CODE AND ANY EXECUTABLE DERIVED THEREOF ARE PROPRIETARY
  * TO PT LEN INDUSTRI (PERSERO), AS APPLICABLE, AND SHALL NOT BE USED IN ANY WAY
  * OTHER THAN BEFOREHAND AGREED ON BY PT LEN INDUSTRI (PERSERO), NOR BE REPRODUCED
  * OR DISCLOSED TO THIRD PARTIES WITHOUT PRIOR WRITTEN AUTHORIZATION BY
  * PT LEN INDUSTRI (PERSERO), AS APPLICABLE.
- * 
+ *
  * Created Date: Friday, March 22nd 2024, 11:20:53 am
  * Author: Rizki Rifani | rizkirifandi7@gmail.com <https://github.com/rizkirifandi7>
- * 
+ *
  */
 
-
 import { getArea, getLength } from "ol/sphere.js";
-import Circle from 'ol/geom/Circle';
 
-const formatCircle = function (geometry) {
-    let length;
-    if (geometry instanceof Circle) {
-        // Calculate the circumference of the circle
-        const radius = geometry.getRadius();
-        length = 2 * Math.PI * radius;
-    } else {
-        length = getLength(geometry);
-    }
-
-    let output;
-    if (length > 100) {
-        output = Math.round((length / 1000) * 100) / 100 + " km";
-    } else {
-        output = Math.round(length * 100) / 100 + " m";
-    }
-    return output;
-};
-
+/**
+ * Format length output.
+ * @param {LineString} line The line.
+ * @return {string} The formatted length.
+ */
 const formatLength = function (line) {
 	const length = getLength(line);
 	let output;
 	if (length > 100) {
-		output = Math.round((length / 1000) * 100) / 100 + " km";
+		output = Math.round((length / 1000) * 100) / 100 + " " + "km";
 	} else {
-		output = Math.round(length * 100) / 100 + " m";
+		output = Math.round(length * 100) / 100 + " " + "m";
 	}
 	return output;
 };
 
+/**
+ * Format area output.
+ * @param {Polygon} polygon The polygon.
+ * @return {string} Formatted area.
+ */
 const formatArea = function (polygon) {
 	const area = getArea(polygon);
 	let output;
 	if (area > 10000) {
-		output = Math.round((area / 1000000) * 100) / 100 + " km\xB2";
+		output = Math.round((area / 1000000) * 100) / 100 + " " + "km<sup>2</sup>";
 	} else {
-		output = Math.round(area * 100) / 100 + " m\xB2";
+		output = Math.round(area * 100) / 100 + " " + "m<sup>2</sup>";
 	}
 	return output;
 };
 
-export { formatArea, formatLength, formatCircle };
+export { formatArea, formatLength };

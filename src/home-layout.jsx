@@ -22,8 +22,8 @@ import OSM from "ol/source/OSM";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 
-import { Draw, Snap } from "ol/interaction.js";
-import { fromLonLat, toLonLat } from "ol/proj";
+import { Draw, Snap, DragRotateAndZoom, defaults as defaultInteractions } from "ol/interaction.js";
+import { fromLonLat, toLonLat, get } from "ol/proj";
 import { Circle as CircleStyle, Stroke, Style } from "ol/style.js";
 import { Overlay } from "ol";
 import { unByKey } from "ol/Observable";
@@ -44,22 +44,8 @@ import {
 import Button from "./components/button";
 import { markerStyle, styleLine } from "./constant/marker-style";
 import { formatArea, formatLength } from "./utils/format-map";
-import { get } from "ol/proj.js";
 
-/**
- * Represents the vector source for features.
- * @type {object}
- */
-const source = new VectorSource();
 
-/**
- * Represents the vector layer for displaying features on the map.
- * @type {object}
- */
-const vector = new VectorLayer({
-	source: source,
-	style: markerStyle,
-});
 
 const HomeLayout = () => {
 	const [drawFeature, setDrawFeature] = useState(null);
@@ -74,6 +60,10 @@ const HomeLayout = () => {
 	const measureTooltipElementRef = useRef();
 	const measureTooltipRef = useRef();
 	const tileRef = useRef();
+	const outputRef = useRef();
+	const sketchRef = useRef();
+	const sourceRef = useRef(new VectorSource());
+	const vectorRef = useRef(new VectorLayer({ source: sourceRef.current, style: markerStyle}));
 
 	/**
 	 * Handles button click event.
@@ -113,13 +103,15 @@ const HomeLayout = () => {
 			extent[2] += extent[2];
 
 			const map = new Map({
-				layers: [tile, vector],
+				layers: [tile, vectorRef.current],
 				view: new View({
 					center: fromLonLat([107.60981, -6.914744]),
 					zoom: 10,
 				}),
 				target: mapRef.current,
 				controls: [],
+				extent,
+				interactions: defaultInteractions().extend([new DragRotateAndZoom()]),
 			});
 
 			map.on("moveend", () => {
@@ -129,7 +121,7 @@ const HomeLayout = () => {
 				setLongitude(latLon[0].toFixed(6));
 			});
 
-			source.on("addfeature", function (e) {
+			sourceRef.current.on("addfeature", function (e) {
 				flash(e.feature);
 			});
 
@@ -141,6 +133,96 @@ const HomeLayout = () => {
 			};
 		}
 	}, []);
+
+	/**
+	 * Handles zooming in/out of the map.
+	 * @param {number} value - Zoom value.
+	 */
+	const handleZoom = (value) => {
+		const view = mapLayerRef.current.getView();
+		const currentZoom = view.getZoom();
+		view.animate({ zoom: currentZoom + value, duration: 500 });
+	};
+
+	/**
+	 * Handles tooltip display.
+	 * @param {object} geom - Geometry object.
+	 * @param {Array} tooltipCoord - Coordinate array for tooltip.
+	 */
+	const handleTooltip = (geom, tooltipCoord) => {
+		switch (geom.constructor) {
+			case LineString:
+				outputRef.current = formatLength(geom);
+				break;
+			case Polygon:
+				outputRef.current = formatArea(geom) + formatLength(geom);
+				break;
+			default:
+				return;
+		}
+		measureTooltipElementRef.current.style.display = "block";
+		measureTooltipElementRef.current.innerHTML = outputRef.current;
+		measureTooltipRef.current.setPosition(tooltipCoord);
+	};
+
+	/**
+	 * Adds interaction to the map.
+	 * @param {string} [type="LineString"] - Type of interaction to add.
+	 *
+	 */
+	const addInteractions = useCallback(
+		(type = "LineString") => {
+			mapLayerRef.current.removeInteraction(drawFeature);
+			mapLayerRef.current.removeInteraction(snapRef.current);
+
+			const draw = new Draw({
+				source: sourceRef.current,
+				type: type,
+				style: styleLine,
+			});
+
+			setDrawFeature(draw);
+			mapLayerRef.current.addInteraction(draw);
+
+			measureTooltipRef.current = new Overlay({
+				element: measureTooltipElementRef.current,
+				offset: [15, -15],
+				positioning: "bottom-center",
+				stopEvent: false,
+				insertFirst: false,
+			});
+
+			mapLayerRef.current.addOverlay(measureTooltipRef.current);
+
+			draw.on("drawstart", (evt) => {
+				sketchRef.current = evt.feature;
+
+				sketchRef.current.getGeometry().on("change", (evt) => {
+					const geom = evt.target;
+					const tooltipCoord = geom.getLastCoordinate();
+					handleTooltip(geom, tooltipCoord);
+				});
+			});
+
+			draw.on("drawend", () => {
+				measureTooltipElementRef.current.style.display = "none";
+			});
+
+			const snap = new Snap({ source: sourceRef.current });
+			snapRef.current = snap;
+			mapLayerRef.current.addInteraction(snap);
+		},
+		[drawFeature]
+	);
+
+	/**
+	 * Removes interaction from the map.
+	 */
+	const removeInteractions = useCallback(() => {
+		mapLayerRef.current.removeInteraction(drawFeature);
+		mapLayerRef.current.removeOverlay(measureTooltipRef.current);
+		setDrawFeature(null);
+	}, [drawFeature]);
 
 	/**
 	 * Flashes a feature on the map.
@@ -181,104 +263,13 @@ const HomeLayout = () => {
 		}
 	};
 
-	/**
-	 * Handles tooltip display.
-	 * @param {object} geom - Geometry object.
-	 * @param {Array} tooltipCoord - Coordinate array for tooltip.
-	 */
-	const handleTooltip = (geom, tooltipCoord) => {
-		let output;
-		switch (geom.constructor) {
-			case LineString:
-				output = formatLength(geom);
-				break;
-			case Polygon:
-				output = formatArea(geom) + formatLength(geom);
-				break;
-			default:
-				return;
-		}
-		measureTooltipElementRef.current.style.display = "block";
-		measureTooltipElementRef.current.innerHTML = output;
-		measureTooltipRef.current.setPosition(tooltipCoord);
-	};
-
-	/**
-	 * Adds interaction to the map.
-	 * @param {string} [type="LineString"] - Type of interaction to add.
-	 *
-	 */
-	const addInteractions = useCallback(
-		(type = "LineString") => {
-			mapLayerRef.current.removeInteraction(drawFeature);
-			mapLayerRef.current.removeInteraction(snapRef.current);
-
-			const draw = new Draw({
-				source,
-				type: type,
-				style: styleLine,
-			});
-
-			setDrawFeature(draw);
-			mapLayerRef.current.addInteraction(draw);
-
-			measureTooltipRef.current = new Overlay({
-				element: measureTooltipElementRef.current,
-				offset: [15, -15],
-				positioning: "bottom-center",
-				stopEvent: false,
-				insertFirst: false,
-			});
-
-			mapLayerRef.current.addOverlay(measureTooltipRef.current);
-
-			draw.on("drawstart", (evt) => {
-				let sketch = evt.feature;
-
-				sketch.getGeometry().on("change", (evt) => {
-					const geom = evt.target;
-					const tooltipCoord = geom.getLastCoordinate();
-					handleTooltip(geom, tooltipCoord);
-				});
-			});
-
-			draw.on("drawend", () => {
-				measureTooltipElementRef.current.style.display = "none";
-			});
-
-			const snap = new Snap({ source: source });
-			snapRef.current = snap;
-			mapLayerRef.current.addInteraction(snap);
-		},
-		[drawFeature]
-	);
-
-	/**
-	 * Removes interaction from the map.
-	 */
-	const removeInteractions = useCallback(() => {
-		mapLayerRef.current.removeInteraction(drawFeature);
-		mapLayerRef.current.removeOverlay(measureTooltipRef.current);
-		setDrawFeature(null);
-	}, [drawFeature]);
-
-	/**
-	 * Handles zooming in/out of the map.
-	 * @param {number} value - Zoom value.
-	 */
-	const handleZoom = (value) => {
-		const view = mapLayerRef.current.getView();
-		const currentZoom = view.getZoom();
-		view.animate({ zoom: currentZoom + value, duration: 500 });
-	};
-
 	return (
 		<div className="relative w-screen h-screen bg-gray-800">
-			<div
-				ref={measureTooltipElementRef}
-				className="absolute bg-white w-20 h-8 p-2 text-black text-sm font-semibold rounded-md shadow-md hidden"
-			/>
 			<div ref={mapRef} className="w-full h-full p-3 rounded-md">
+				<div
+					ref={measureTooltipElementRef}
+					className="relative bg-white px-2 py-1 text-black text-sm font-semibold rounded-md shadow-md hidden"
+				/>
 				<div className="absolute top-0 right-0 h-screen z-10">
 					<div className="flex flex-col justify-center items-end w-full h-full pr-5 gap-2">
 						<Button className={"bg-btn-bg"} onClick={() => removeInteractions()}>
