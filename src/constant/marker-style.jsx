@@ -25,7 +25,7 @@ const markerStyle = {
 	"stroke-color": "#ffcc33",
 	"stroke-width": 2,
 	"circle-radius": 9,
-	"icon-src": "/jojo.png",
+	"icon-src": "/jojo.svg",
 	"icon-width": 40,
 	"icon-height": 40,
 };
