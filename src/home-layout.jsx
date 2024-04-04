@@ -60,7 +60,7 @@ const HomeLayout = () => {
 								<IconZoomOut />
 							</Button>
 						</div>
-						<div className="relative">
+						<div className="relative flex flex-col gap-2">
 							<Button
 								onClick={() => {
 									toggleOpen();
