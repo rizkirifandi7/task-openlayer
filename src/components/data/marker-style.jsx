@@ -25,7 +25,7 @@ const markerStyle = {
 	"stroke-color": "#ffcc33",
 	"stroke-width": 2,
 	"circle-radius": 9,
-	"icon-src": "/flag2.svg",
+	"icon-src": "https://api.iconify.design/material-symbols:location-on-rounded.svg?color=%23ffffff",
 	"icon-width": 40,
 	"icon-height": 40,
 };

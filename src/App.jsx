@@ -1,8 +1,7 @@
-import HomeLayout from "./home-layout";
+import MapLayout from "./components/map/map-view/map-view";
 
 function App() {
-	return <HomeLayout />;
+	return <MapLayout />;
 }
 
 export default App;
-

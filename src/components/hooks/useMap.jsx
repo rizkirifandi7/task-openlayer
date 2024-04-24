@@ -17,8 +17,8 @@ import { getVectorContext } from "ol/render";
 import { easeOut } from "ol/easing";
 import { LineString, Polygon } from "ol/geom";
 
-import { markerStyle, styleLine } from "../constant/marker-style";
-import { formatArea, formatLength } from "../utils/format-map";
+import { markerStyle, styleLine } from "../data/marker-style";
+import { formatArea, formatLength } from "../utils/function/format-map";
 
 export const useMap = () => {
 	const [drawFeature, setDrawFeature] = useState(null);
@@ -247,6 +247,6 @@ export const useMap = () => {
 		activeButton,
 		isOpen,
 		removeInteractions,
-    measureTooltipElementRef,
+		measureTooltipElementRef,
 	};
 };
