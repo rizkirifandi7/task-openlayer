@@ -12,18 +12,16 @@
  *
  */
 
+
+import { FiPlusCircle, FiMinusCircle  } from "react-icons/fi";
+import { MdOutlineDraw } from "react-icons/md";
+import { PiCursorBold } from "react-icons/pi";
+import { IoAnalyticsOutline } from "react-icons/io5";
+import { BiPolygon, BiMapPin  } from "react-icons/bi";
+import { FaRegCircle } from "react-icons/fa";
+
 import { useMap } from "./hooks/useMap";
 
-import {
-	IconArrow,
-	IconCircle,
-	IconDraw,
-	IconLine,
-	IconPoint,
-	IconPolygon,
-	IconZoomIn,
-	IconZoomOut,
-} from "./assets/icon-button";
 import Button from "./components/button";
 
 const HomeLayout = () => {
@@ -50,14 +48,14 @@ const HomeLayout = () => {
 				<div className="absolute top-0 right-0 h-screen z-10">
 					<div className="flex flex-col justify-center items-end w-full h-full pr-5 gap-2">
 						<Button className={"bg-btn-bg"} onClick={() => removeInteractions()}>
-							<IconArrow />
+							<PiCursorBold />
 						</Button>
 						<div className="bg-btn-bg rounded">
 							<Button onClick={() => handleZoom(+2)}>
-								<IconZoomIn />
+								<FiPlusCircle />
 							</Button>
 							<Button onClick={() => handleZoom(-2)}>
-								<IconZoomOut />
+								<FiMinusCircle />
 							</Button>
 						</div>
 						<div className="relative flex flex-col gap-2">
@@ -67,32 +65,32 @@ const HomeLayout = () => {
 								}}
 								className={!isOpen ? "bg-btn-bg" : "bg-slate-200"}
 							>
-								<IconDraw />
+								<MdOutlineDraw />
 							</Button>
 							<div className={`absolute right-10 bottom-0 flex gap-2 flex-col-reverse ${isOpen ? "block" : "hidden"}`}>
 								<Button
 									className={activeButton === "Point" ? "bg-slate-200" : "bg-btn-bg"}
 									onClick={() => handleButtonClick("Point")}
 								>
-									<IconPoint />
+									<BiMapPin />
 								</Button>
 								<Button
 									className={activeButton === "LineString" ? "bg-slate-200" : "bg-btn-bg"}
 									onClick={() => handleButtonClick("LineString")}
 								>
-									<IconLine />
+									<IoAnalyticsOutline />
 								</Button>
 								<Button
 									className={activeButton === "Polygon" ? "bg-slate-200" : "bg-btn-bg"}
 									onClick={() => handleButtonClick("Polygon")}
 								>
-									<IconPolygon />
+									<BiPolygon />
 								</Button>
 								<Button
 									className={activeButton === "Circle" ? "bg-slate-200" : "bg-btn-bg"}
 									onClick={() => handleButtonClick("Circle")}
 								>
-									<IconCircle />
+									<FaRegCircle />
 								</Button>
 							</div>
 						</div>
