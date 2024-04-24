@@ -27,7 +27,7 @@ import Tooltip from "../tooltip/tooltip-measure";
  * @component
  * @returns {JSX.Element} The rendered MapLayout component
  */
-const MapLayout = () => {
+const MapView = () => {
 	const {
 		mapRef,
 		latitude,
@@ -62,4 +62,4 @@ const MapLayout = () => {
 	);
 };
 
-export default MapLayout;
+export default MapView;
