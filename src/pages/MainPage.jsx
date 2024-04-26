@@ -1,4 +1,4 @@
-import MapView from "../components/map/components/map-view/MapView";
+import MapView from "../components/map/MapView";
 
 const MainPage = () => {
 	return <MapView />;

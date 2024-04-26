@@ -18,7 +18,7 @@ import { easeOut } from "ol/easing";
 import { LineString, Polygon } from "ol/geom";
 
 import { markerStyle, styleLine } from "../data/MarkerStyle";
-import { formatArea, formatLength } from "../utils/function/formatMap";
+import { formatArea, formatLength } from "../utils/formatMap";
 
 export const useMap = () => {
 	const [drawFeature, setDrawFeature] = useState(null);

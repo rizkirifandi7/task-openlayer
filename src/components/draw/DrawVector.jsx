@@ -22,9 +22,11 @@ import PropTypes from "prop-types";
 import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 import { MdOutlineDraw } from "react-icons/md";
 import { PiCursorBold } from "react-icons/pi";
+import { IoAnalyticsOutline } from "react-icons/io5";
+import { BiPolygon, BiMapPin } from "react-icons/bi";
+import { FaRegCircle } from "react-icons/fa";
 
-import Button from "../button/Button";
-import { buttonData } from "../../data/ButtonDataDraw";
+import Button from "../../common/components/Button";
 
 /**
  * Draw component
@@ -61,15 +63,30 @@ const Draw = ({ handleZoom, handleButtonClick, toggleOpen, activeButton, isOpen,
 					</Button>
 
 					<div className={`absolute right-10 bottom-0 flex gap-2 flex-col-reverse ${isOpen ? "block" : "hidden"}`}>
-						{buttonData.map(({ type, icon: Icon }) => (
-							<Button
-								key={type}
-								className={activeButton === type ? "bg-slate-200" : "bg-btn-bg"}
-								onClick={() => handleButtonClick(type)}
-							>
-								<Icon />
-							</Button>
-						))}
+						<Button
+							className={activeButton === "Point" ? "bg-slate-200" : "bg-btn-bg"}
+							onClick={() => handleButtonClick("Point")}
+						>
+							<BiMapPin />
+						</Button>
+						<Button
+							className={activeButton === "LineString" ? "bg-slate-200" : "bg-btn-bg"}
+							onClick={() => handleButtonClick("LineString")}
+						>
+							<IoAnalyticsOutline />
+						</Button>
+						<Button
+							className={activeButton === "Polygon" ? "bg-slate-200" : "bg-btn-bg"}
+							onClick={() => handleButtonClick("Polygon")}
+						>
+							<BiPolygon />
+						</Button>
+						<Button
+							className={activeButton === "Circle" ? "bg-slate-200" : "bg-btn-bg"}
+							onClick={() => handleButtonClick("Circle")}
+						>
+							<FaRegCircle />
+						</Button>
 					</div>
 				</div>
 			</div>

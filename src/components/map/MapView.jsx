@@ -17,10 +17,8 @@
  * @copyright Intern MSIB6 @ PT Len Industri (Persero)
  */
 
-import { useMap } from "../../hooks/useMap";
-import Draw from "../map-interactions/DrawVector";
-import LongLatInfo from "../geo-info/LongLatInfo";
-import Tooltip from "../tooltip/TooltipMeasure";
+import { useMap } from "./hooks/useMap";
+import Draw from "../draw/DrawVector";
 
 /**
  * MapLayout component
@@ -45,7 +43,11 @@ const MapView = () => {
 		<div className="relative w-screen h-screen bg-gray-800">
 			<div ref={mapRef} className="w-full h-full p-3 rounded-md">
 				{/* Tooltip for measurement */}
-				<Tooltip measureTooltipElementRef={measureTooltipElementRef} />
+				<div
+					ref={measureTooltipElementRef}
+					className="relative bg-white px-2 py-1 text-black text-sm font-semibold rounded-md shadow-md hidden"
+				/>
+
 				{/* Draw component with handlers and state */}
 				<Draw
 					handleZoom={handleZoom}
@@ -55,8 +57,13 @@ const MapView = () => {
 					isOpen={isOpen}
 					removeInteractions={removeInteractions}
 				/>
+
 				{/* Display latitude and longitude */}
-				<LongLatInfo latitude={latitude} longitude={longitude} />
+				<div className="absolute bottom-5 right-10 px-4 py-2 mb-4 bg-btn-bg text-white z-10 rounded-md">
+					<p className="text-base font-semibold text-white">
+						Latitude: {latitude} | Longitude: {longitude}
+					</p>
+				</div>
 			</div>
 		</div>
 	);
