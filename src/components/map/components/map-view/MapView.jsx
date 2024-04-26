@@ -18,8 +18,8 @@
  */
 
 import { useMap } from "../../hooks/useMap";
-import Draw from "../draw/DrawVector";
-import LongLatInfo from "../long-lat/LongLatInfo";
+import Draw from "../map-interactions/DrawVector";
+import LongLatInfo from "../geo-info/LongLatInfo";
 import Tooltip from "../tooltip/TooltipMeasure";
 
 /**
