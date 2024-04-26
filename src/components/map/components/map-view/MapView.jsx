@@ -18,9 +18,9 @@
  */
 
 import { useMap } from "../../hooks/useMap";
-import Draw from "../draw/draw-vector";
-import LongLatInfo from "../long-lat/long-lat-info";
-import Tooltip from "../tooltip/tooltip-measure";
+import Draw from "../draw/DrawVector";
+import LongLatInfo from "../long-lat/LongLatInfo";
+import Tooltip from "../tooltip/TooltipMeasure";
 
 /**
  * MapLayout component

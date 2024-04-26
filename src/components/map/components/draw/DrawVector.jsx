@@ -23,8 +23,8 @@ import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 import { MdOutlineDraw } from "react-icons/md";
 import { PiCursorBold } from "react-icons/pi";
 
-import Button from "../button/button";
-import { buttonData } from "../../data/button-data";
+import Button from "../button/Button";
+import { buttonData } from "../../data/ButtonDataDraw";
 
 /**
  * Draw component
