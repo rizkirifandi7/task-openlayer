@@ -27,7 +27,7 @@ import { BiPolygon, BiMapPin } from "react-icons/bi";
 import { FaRegCircle } from "react-icons/fa";
 
 import Button from "./utils/button/ButtonDraw";
-import { useZoomFeature } from "../zoom/useZoomFeature";
+import { useZoom } from "../zoom/useZoom";
 
 /**
  * Draw component
@@ -42,7 +42,7 @@ import { useZoomFeature } from "../zoom/useZoomFeature";
  * @returns {JSX.Element} The rendered Draw component
  */
 const Draw = ({ toggleOpen, activeButton, isOpen, removeInteractions, handleButtonClick }) => {
-	const { handleZoom } = useZoomFeature();
+	const { handleZoom } = useZoom();
 
 	return (
 		<div className="absolute top-0 right-0 h-screen z-10">

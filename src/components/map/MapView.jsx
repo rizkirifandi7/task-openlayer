@@ -18,7 +18,7 @@
  */
 
 import Draw from "../draw/DrawVector";
-import { useDrawFeature } from "../draw/hooks/useDrawFeature";
+import { useDraw } from "../draw/hooks/useDraw";
 import { MapContext } from "./hooks/useMap";
 import { useContext } from "react";
 
@@ -29,7 +29,7 @@ import { useContext } from "react";
  */
 const MapView = () => {
 	const { mapRef, latitude, longitude, measureTooltipElementRef } = useContext(MapContext);
-	const { handleButtonClick, toggleOpen, removeInteractions, activeButton, isOpen } = useDrawFeature();
+	const { handleButtonClick, toggleOpen, removeInteractions, activeButton, isOpen } = useDraw();
 
 	return (
 		<div className="relative w-screen h-screen bg-gray-800">

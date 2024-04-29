@@ -25,7 +25,7 @@ import { MapContext } from "../map/hooks/useMap";
  * @returns {Object} An object containing the following properties:
  * - handleZoom: A function to handle zooming in/out of the map.
  */
-export const useZoomFeature = () => {
+export const useZoom = () => {
 	const { mapLayerRef } = useContext(MapContext);
 
 	/**

@@ -23,7 +23,7 @@ import { Overlay } from "ol";
 import { LineString, Polygon } from "ol/geom";
 
 import "ol/ol.css";
-import { formatArea, formatLength } from "../utils/function/formatMap";
+import { formatArea, formatLength } from "../utils/function/formatGeoNumber";
 import { MapContext } from "../../map/hooks/useMap";
 
 const styleLine = new Style({
@@ -57,7 +57,7 @@ const styleLine = new Style({
  * - activeButton: The currently active button.
  * - isOpen: A boolean indicating whether the draw feature is open.
  */
-export const useDrawFeature = () => {
+export const useDraw = () => {
 	const { mapLayerRef, measureTooltipElementRef, outputRef, measureTooltipRef, sketchRef, sourceRef, snapRef } =
 		useContext(MapContext);
 
