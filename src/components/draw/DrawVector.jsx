@@ -26,7 +26,8 @@ import { IoAnalyticsOutline } from "react-icons/io5";
 import { BiPolygon, BiMapPin } from "react-icons/bi";
 import { FaRegCircle } from "react-icons/fa";
 
-import Button from "../../common/components/Button";
+import Button from "./utils/button/ButtonDraw";
+import { useZoomFeature } from "../zoom/useZoomFeature";
 
 /**
  * Draw component
@@ -40,7 +41,9 @@ import Button from "../../common/components/Button";
  * @param {Function} props.removeInteractions - The function to remove interactions
  * @returns {JSX.Element} The rendered Draw component
  */
-const Draw = ({ handleZoom, handleButtonClick, toggleOpen, activeButton, isOpen, removeInteractions }) => {
+const Draw = ({ toggleOpen, activeButton, isOpen, removeInteractions, handleButtonClick }) => {
+	const { handleZoom } = useZoomFeature();
+
 	return (
 		<div className="absolute top-0 right-0 h-screen z-10">
 			<div className="flex flex-col justify-center items-end w-full h-full pr-5 gap-2">

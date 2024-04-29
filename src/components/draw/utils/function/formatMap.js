@@ -12,12 +12,17 @@
  *
  */
 
+/**
+ * @file This file contains utility functions for formatting the area and length of geometrical features on a map.
+ * @author Rizki Rifani
+ */
 import { getArea, getLength } from "ol/sphere.js";
 
 /**
- * Format length output.
- * @param {LineString} line The line.
- * @return {string} The formatted length.
+ * @function formatLength
+ * @description Formats the length of a line.
+ * @param {LineString} line - The line whose length is to be formatted.
+ * @returns {string} The formatted length. If the length is more than 100, it is formatted in kilometers (km), otherwise in meters (m).
  */
 const formatLength = function (line) {
 	const length = getLength(line);
@@ -31,9 +36,10 @@ const formatLength = function (line) {
 };
 
 /**
- * Format area output.
- * @param {Polygon} polygon The polygon.
- * @return {string} Formatted area.
+ * @function formatArea
+ * @description Formats the area of a polygon.
+ * @param {Polygon} polygon - The polygon whose area is to be formatted.
+ * @returns {string} The formatted area. If the area is more than 10000, it is formatted in square kilometers (km^2), otherwise in square meters (m^2).
  */
 const formatArea = function (polygon) {
 	const area = getArea(polygon);

@@ -1,4 +1,23 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+/*
+ * Copyright Intern MSIB6 @ PT Len Industri (Persero)
+ *
+ * THIS SOFTWARE SOURCE CODE AND ANY EXECUTABLE DERIVED THEREOF ARE PROPRIETARY
+ * TO PT LEN INDUSTRI (PERSERO), AS APPLICABLE, AND SHALL NOT BE USED IN ANY WAY
+ * OTHER THAN BEFOREHAND AGREED ON BY PT LEN INDUSTRI (PERSERO), NOR BE REPRODUCED
+ * OR DISCLOSED TO THIRD PARTIES WITHOUT PRIOR WRITTEN AUTHORIZATION BY
+ * PT LEN INDUSTRI (PERSERO), AS APPLICABLE.
+ *
+ * Created Date: Wednesday, April 24th 2024, 3:28:17 pm
+ * Author: Rizki Rifani | rizkirifandi7@gmail.com <https://github.com/rizkirifandi7>
+ *
+ */
+
+/**
+ * @file This file contains the MapContextProvider component which provides a context for map-related operations.
+ * @author Rizki Rifani
+ */
+import { useEffect, useRef, useState, createContext, useMemo } from "react";
+import PropTypes from "prop-types";
 
 import "ol/ol.css";
 import Map from "ol/Map";
@@ -8,24 +27,35 @@ import OSM from "ol/source/OSM";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 
-import { Draw, Snap, DragRotateAndZoom, defaults as defaultInteractions } from "ol/interaction.js";
+import { DragRotateAndZoom, defaults as defaultInteractions } from "ol/interaction.js";
 import { fromLonLat, toLonLat, get } from "ol/proj";
 import { Circle as CircleStyle, Stroke, Style } from "ol/style.js";
-import { Overlay } from "ol";
 import { unByKey } from "ol/Observable";
 import { getVectorContext } from "ol/render";
 import { easeOut } from "ol/easing";
-import { LineString, Polygon } from "ol/geom";
 
-import { markerStyle, styleLine } from "../data/MarkerStyle";
-import { formatArea, formatLength } from "../utils/formatMap";
+export const MapContext = createContext();
 
-export const useMap = () => {
-	const [drawFeature, setDrawFeature] = useState(null);
-	const [isOpen, setIsOpen] = useState(false);
+const markerStyle = {
+	"fill-color": "rgba(255, 255, 255, 0.2)",
+	"stroke-color": "#ffcc33",
+	"stroke-width": 2,
+	"circle-radius": 9,
+	"icon-src": "https://api.iconify.design/material-symbols:location-on-rounded.svg?color=%23ffffff",
+	"icon-width": 40,
+	"icon-height": 40,
+};
+
+/**
+ * @function MapContextProvider
+ * @description A context provider for map-related operations.
+ * @param {Object} props - The properties passed to this component.
+ * @param {ReactNode} props.children - The children components.
+ * @returns {ReactElement} The MapContext.Provider component.
+ */
+export const MapContextProvider = ({ children }) => {
 	const [latitude, setLatitude] = useState(0);
 	const [longitude, setLongitude] = useState(0);
-	const [activeButton, setActiveButton] = useState(null);
 
 	const mapRef = useRef();
 	const mapLayerRef = useRef();
@@ -37,20 +67,6 @@ export const useMap = () => {
 	const sketchRef = useRef();
 	const sourceRef = useRef(new VectorSource());
 	const vectorRef = useRef(new VectorLayer({ source: sourceRef.current, style: markerStyle }));
-
-	/**
-	 * Handles button click event.
-	 * @param {string} type - Type of the button clicked.
-	 */
-	const handleButtonClick = (type) => {
-		addInteractions(type);
-		setActiveButton(type);
-	};
-
-	/**
-	 * Toggles the open status.
-	 */
-	const toggleOpen = () => setIsOpen(!isOpen);
 
 	useEffect(() => {
 		if (mapRef.current) {
@@ -108,98 +124,9 @@ export const useMap = () => {
 	}, []);
 
 	/**
-	 * Handles zooming in/out of the map.
-	 * @param {number} value - Zoom value.
-	 */
-	const handleZoom = (value) => {
-		const view = mapLayerRef.current.getView();
-		const currentZoom = view.getZoom();
-		view.animate({ zoom: currentZoom + value, duration: 500 });
-	};
-
-	/**
-	 * Handles tooltip display.
-	 * @param {object} geom - Geometry object.
-	 * @param {Array} tooltipCoord - Coordinate array for tooltip.
-	 */
-	const handleTooltip = (geom, tooltipCoord) => {
-		switch (geom.constructor) {
-			case LineString:
-				outputRef.current = formatLength(geom);
-				break;
-			case Polygon:
-				outputRef.current = formatArea(geom) + formatLength(geom);
-				break;
-			default:
-				return;
-		}
-		measureTooltipElementRef.current.style.display = "block";
-		measureTooltipElementRef.current.innerHTML = outputRef.current;
-		measureTooltipRef.current.setPosition(tooltipCoord);
-	};
-
-	/**
-	 * Adds interaction to the map.
-	 * @param {string} [type="LineString"] - Type of interaction to add.
-	 *
-	 */
-	const addInteractions = useCallback(
-		(type = "LineString") => {
-			mapLayerRef.current.removeInteraction(drawFeature);
-			mapLayerRef.current.removeInteraction(snapRef.current);
-
-			const draw = new Draw({
-				source: sourceRef.current,
-				type: type,
-				style: styleLine,
-			});
-
-			setDrawFeature(draw);
-			mapLayerRef.current.addInteraction(draw);
-
-			measureTooltipRef.current = new Overlay({
-				element: measureTooltipElementRef.current,
-				offset: [15, -15],
-				positioning: "bottom-center",
-				stopEvent: false,
-				insertFirst: false,
-			});
-
-			mapLayerRef.current.addOverlay(measureTooltipRef.current);
-
-			draw.on("drawstart", (evt) => {
-				sketchRef.current = evt.feature;
-
-				sketchRef.current.getGeometry().on("change", (evt) => {
-					const geom = evt.target;
-					const tooltipCoord = geom.getLastCoordinate();
-					handleTooltip(geom, tooltipCoord);
-				});
-			});
-
-			draw.on("drawend", () => {
-				measureTooltipElementRef.current.style.display = "none";
-			});
-
-			const snap = new Snap({ source: sourceRef.current });
-			snapRef.current = snap;
-			mapLayerRef.current.addInteraction(snap);
-		},
-		[drawFeature]
-	);
-
-	/**
-	 * Removes interaction from the map.
-	 */
-	const removeInteractions = useCallback(() => {
-		mapLayerRef.current.removeInteraction(drawFeature);
-		mapLayerRef.current.removeOverlay(measureTooltipRef.current);
-		setDrawFeature(null);
-	}, [drawFeature]);
-
-	/**
-	 * Flashes a feature on the map.
-	 * @param {object} feature - The feature to flash.
+	 * @function flash
+	 * @description Flashes a feature on the map.
+	 * @param {Object} feature - The feature to flash.
 	 */
 	const flash = (feature) => {
 		const duration = 3000;
@@ -207,6 +134,11 @@ export const useMap = () => {
 		const flashGeom = feature.getGeometry().clone();
 		const listenerKey = tileRef.current.on("postrender", animate);
 
+		/**
+		 * @function animate
+		 * @description Animates a feature on the map.
+		 * @param {Object} event - The event object.
+		 */
 		function animate(event) {
 			const frameState = event.frameState;
 			const elapsed = frameState.time - start;
@@ -236,17 +168,36 @@ export const useMap = () => {
 		}
 	};
 
-	return {
-		mapRef,
-		mapLayerRef,
-		handleZoom,
-		handleButtonClick,
-		toggleOpen,
-		latitude,
-		longitude,
-		activeButton,
-		isOpen,
-		removeInteractions,
-		measureTooltipElementRef,
-	};
+	const contextValue = useMemo(
+		() => ({
+			mapRef,
+			mapLayerRef,
+			latitude,
+			longitude,
+			measureTooltipElementRef,
+			outputRef,
+			measureTooltipRef,
+			sketchRef,
+			snapRef,
+			sourceRef,
+		}),
+		[
+			mapRef,
+			mapLayerRef,
+			latitude,
+			longitude,
+			measureTooltipElementRef,
+			outputRef,
+			measureTooltipRef,
+			sketchRef,
+			snapRef,
+			sourceRef,
+		]
+	);
+
+	return <MapContext.Provider value={contextValue}>{children}</MapContext.Provider>;
+};
+
+MapContextProvider.propTypes = {
+	children: PropTypes.node,
 };

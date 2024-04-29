@@ -17,8 +17,10 @@
  * @copyright Intern MSIB6 @ PT Len Industri (Persero)
  */
 
-import { useMap } from "./hooks/useMap";
 import Draw from "../draw/DrawVector";
+import { useDrawFeature } from "../draw/hooks/useDrawFeature";
+import { MapContext } from "./hooks/useMap";
+import { useContext } from "react";
 
 /**
  * MapLayout component
@@ -26,18 +28,8 @@ import Draw from "../draw/DrawVector";
  * @returns {JSX.Element} The rendered MapLayout component
  */
 const MapView = () => {
-	const {
-		mapRef,
-		latitude,
-		longitude,
-		measureTooltipElementRef,
-		handleZoom,
-		handleButtonClick,
-		toggleOpen,
-		activeButton,
-		isOpen,
-		removeInteractions,
-	} = useMap();
+	const { mapRef, latitude, longitude, measureTooltipElementRef } = useContext(MapContext);
+	const { handleButtonClick, toggleOpen, removeInteractions, activeButton, isOpen } = useDrawFeature();
 
 	return (
 		<div className="relative w-screen h-screen bg-gray-800">
@@ -50,12 +42,11 @@ const MapView = () => {
 
 				{/* Draw component with handlers and state */}
 				<Draw
-					handleZoom={handleZoom}
-					handleButtonClick={handleButtonClick}
 					toggleOpen={toggleOpen}
 					activeButton={activeButton}
 					isOpen={isOpen}
 					removeInteractions={removeInteractions}
+					handleButtonClick={handleButtonClick}
 				/>
 
 				{/* Display latitude and longitude */}
